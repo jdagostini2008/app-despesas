@@ -62,9 +62,9 @@ class MyHomePage extends StatelessWidget {
                         ),
                       ),
                       padding: const EdgeInsets.all(10),
-                      child: Text(
-                        tr.value.toString(),
-                        style: const TextStyle(
+                      child: const Text(
+                        "R\$ ${2 + 2 * 3}",
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                           color: Colors.purple,
@@ -72,11 +72,23 @@ class MyHomePage extends StatelessWidget {
                       ),
                     ),
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(tr.title),
-                        Text(tr.date.toString()),
+                        Text(
+                          tr.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          tr.date.toString(),
+                          style: const TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               );
