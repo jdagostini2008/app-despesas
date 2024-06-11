@@ -10,7 +10,14 @@ class ExpensesApp extends StatelessWidget {
   const ExpensesApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: MyHomePage());
+    return MaterialApp(
+       home: MyHomePage(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSwatch
+          (primarySwatch: Colors.purple).
+        copyWith(secondary: Colors.amber),
+      ),
+    );
   }
 }
 
