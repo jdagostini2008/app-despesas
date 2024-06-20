@@ -1,81 +1,87 @@
 import 'package:flutter/material.dart';
-import '../models/transaction.dart';
-import 'package:intl/intl.dart';
 
-class TransactionForm extends StatelessWidget {
-  final List<Transaction> transactions;
+class TransactionForm extends StatefulWidget {
+  final void Function(String, double) onSubmit;
 
-  const TransactionForm(this.transactions, {Key? key}) : super(key: key);
+  const TransactionForm(this.onSubmit, {Key? key}) : super(key: key);
+
+  @override
+  State<TransactionForm> createState() => _TransactionFormState();
+}
+
+class _TransactionFormState extends State<TransactionForm> {
+  final titleController = TextEditingController();
+
+  final valueController = TextEditingController();
+
+  _submitForm() {
+    final title = titleController.text;
+    final value = double.tryParse(valueController.text) ?? 0;
+
+    if (title.isEmpty || value <= 0) {
+      return;
+    }
+
+    widget.onSubmit(title, value);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: transactions.isEmpty
-          ? Column(
-        children: [
-          const SizedBox(height: 20),
-          Text(
-            'Nenhuma Transação Cadastrada!',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            height: 200,
-            child: Image.asset(
-              'assets/images/waiting.png',
-              fit: BoxFit.cover,
+    return Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            TextField(
+              controller: titleController,
+              onSubmitted: (_) => _submitForm(),
+              decoration: const InputDecoration(
+                labelText: 'Título',
+              ),
             ),
-          ),
-        ],
-      )
-          : ListView.builder(
-        itemCount: transactions.length,
-        itemBuilder: (ctx, index) {
-          final tr = transactions[index];
-          return Card(
-            child: Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary,
-                      width: 2,
-                    ),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    'R\$ ${tr.value.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tr.title,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    Text(
-                      DateFormat('d MMM y').format(tr.date),
-                      style: const TextStyle(
-                        color: Colors.grey,
+            TextField(
+              controller: valueController,
+              keyboardType:
+              const TextInputType.numberWithOptions(decimal: true),
+              onSubmitted: (_) => _submitForm(),
+              decoration: const InputDecoration(
+                labelText: 'Valor (R\$)',
+              ),
+            ),
+            SizedBox(
+              height: 70,
+              child: Row(
+                children: <Widget>[
+                  const Text('Nenhuma data selecionada!'),
+                  TextButton(
+                    child: const Text(
+                      'Selecionar Data',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
+                    onPressed: () {},
+                  )
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                ElevatedButton(
+                  child: Text(
+                    'Nova Transação',
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.labelLarge?.color,
+                    ),
+                  ),
+                  onPressed: _submitForm,
                 ),
               ],
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

@@ -1,9 +1,9 @@
 import 'package:expenses/components/transaction_form.dart';
+import 'package:expenses/components/transactions_list.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
-import 'components/transactions_list.dart';
-import 'models/transaction.dart';
 import 'components/chart.dart';
+import 'models/transaction.dart';
 
 main() => runApp(ExpensesApp());
 
@@ -26,6 +26,10 @@ class ExpensesApp extends StatelessWidget {
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.black,
+          ),
+          labelLarge: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
         appBarTheme: const AppBarTheme(
@@ -51,29 +55,43 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [
     Transaction(
       id: 't0',
-      title: 'Conta antiga',
-      value: 600.000,
+      title: 'Conta Antiga',
+      value: 400.00,
       date: DateTime.now().subtract(const Duration(days: 33)),
     ),
-     Transaction(
-       id: 't1',
-       title: 'Novo Tênis de Corrida',
-       value: 310.76,
-       date: DateTime.now().subtract(const Duration(days: 3)),
+    Transaction(
+      id: 't1',
+      title: 'Novo Tênis de Corrida',
+      value: 310.76,
+      date: DateTime.now().subtract(const Duration(days: 3)),
     ),
-   Transaction(
-     id: 't2',
-     title: 'Conta de Luz',
-     value: 211.30,
-     date: DateTime.now(),
-   ),
+    Transaction(
+      id: 't2',
+      title: 'Conta de Luz',
+      value: 211.30,
+      date: DateTime.now().subtract(const Duration(days: 4)),
+    ),
+    Transaction(
+      id: 't3',
+      title: 'Cartão de Crédito',
+      value: 100211.30,
+      date: DateTime.now(),
+    ),
+    Transaction(
+      id: 't4',
+      title: 'Lanche',
+      value: 11.30,
+      date: DateTime.now(),
+    ),
   ];
-   List<Transaction> get _recentTransactions {
-     return _transactions.where((tr) {
-       return tr.date.isAfter(DateTime.now().subtract(const Duration(
-           days:7)));
-     }).toList();
-     }
+
+  List<Transaction> get _recentTransactions {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(
+        const Duration(days: 7),
+      ));
+    }).toList();
+  }
 
   _addTransaction(String title, double value) {
     final newTransaction = Transaction(
@@ -94,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet(
       context: context,
       builder: (_) {
-        return TransactionForm(_addTransaction as List<Transaction>);
+        return TransactionForm(_addTransaction);
       },
     );
   }

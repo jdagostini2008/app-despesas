@@ -20,11 +20,11 @@ class Chart extends StatelessWidget {
         bool sameDay = recentTransaction[i].date.day == weekDay.day;
         bool sameMonth = recentTransaction[i].date.month == weekDay.month;
         bool sameYear = recentTransaction[i].date.year == weekDay.year;
+
         if (sameDay && sameMonth && sameYear) {
           totalSum += recentTransaction[i].value;
         }
       }
-
 
       return {
         'day': DateFormat.E().format(weekDay)[0],
@@ -33,12 +33,11 @@ class Chart extends StatelessWidget {
     }).reversed.toList();
   }
 
-   double get _weekTotalValue {
-   return groupedTransactions.fold(0.0, (sum, tr) {
-       return sum + (tr['value'] as double
-       );
-   });
-   }
+  double get _weekTotalValue {
+    return groupedTransactions.fold(0.0, (sum, tr) {
+      return sum + (tr['value'] as double);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +49,12 @@ class Chart extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: groupedTransactions.map((tr) {
-
             return Flexible(
               fit: FlexFit.tight,
-              flex: 23,
               child: ChartBar(
                 label: tr['day'] as String,
                 value: tr['value'] as double,
-                percentage: (tr ['value'] as double) / _weekTotalValue,
+                percentage: (tr['value'] as double) / _weekTotalValue,
               ),
             );
           }).toList(),
