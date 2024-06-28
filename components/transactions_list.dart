@@ -21,7 +21,6 @@ class TransactionList extends StatelessWidget {
             'Nenhuma Transação Cadastrada!',
             style: Theme.of(context).textTheme.titleLarge,
           ),
-          const SizedBox(height: 20),
           SizedBox(
             height: 200,
             child: Image.asset(
@@ -29,6 +28,7 @@ class TransactionList extends StatelessWidget {
               fit: BoxFit.cover,
             ),
           ),
+          const SizedBox(height: 20),
         ],
       )
           : ListView.builder(
