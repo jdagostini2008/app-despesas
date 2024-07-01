@@ -17,8 +17,8 @@ class ExpensesApp extends StatelessWidget {
       home: const MyHomePage(),
       theme: tema.copyWith(
         colorScheme: tema.colorScheme.copyWith(
-          primary: Colors.purple,
           secondary: Colors.amber,
+          primary: Colors.purple,
         ),
         textTheme: tema.textTheme.copyWith(
           titleLarge: const TextStyle(
@@ -94,6 +94,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+       final appBar = AppBar(
+       title: const Text('Despesas Pessoais'),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () => _openTransactionFormModal(context),
+        )
+       ],
+      );
+    final availableHeight =  MediaQuery.of(context).size.height -
+        appBar.preferredSize.height -
+        MediaQuery.of(context).padding.top;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Despesas Pessoais'),
@@ -107,9 +120,15 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Chart(_recentTransactions),
-            TransactionList(_transactions, _removeTransaction),
+          children: <Widget>[
+            SizedBox(
+              height: availableHeight * 0.3,
+              child: Chart(_recentTransactions),
+            ),
+            SizedBox(
+              child: TransactionsList(_transactions, _removeTransaction),
+            height: availableHeight * 0.7,
+            )
           ],
         ),
       ),
