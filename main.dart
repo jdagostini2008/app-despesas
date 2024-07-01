@@ -1,67 +1,123 @@
-import  'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'components/chart_bar.dart';
+import 'package:expenses/components/transaction_form.dart';
+import 'package:expenses/components/transactions_list.dart';
+import 'package:flutter/material.dart';
+import 'dart:math';
+import 'components/chart.dart';
 import 'models/transaction.dart';
 
-class Chart extends StatelessWidget {
-  final List<Transaction> recentTransaction;
+main() => runApp(ExpensesApp());
 
-  const Chart(this.recentTransaction, {Key? key}) : super(key: key);
+class ExpensesApp extends StatelessWidget {
+  ExpensesApp({Key? key}) : super(key: key);
+  final ThemeData tema = ThemeData();
 
-  List<Map<String, Object>> get groupedTransactions {
-    return List.generate(7, (index) {
-      final weekDay = DateTime.now().subtract(
-        Duration(days: index),
-      );
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: const MyHomePage(),
+      theme: tema.copyWith(
+        colorScheme: tema.colorScheme.copyWith(
+          primary: Colors.purple,
+          secondary: Colors.amber,
+        ),
+        textTheme: tema.textTheme.copyWith(
+          titleLarge: const TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+          labelLarge: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          titleTextStyle: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-      double totalSum = 0.0;
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
-      for (var i = 0; i < recentTransaction.length; i++) {
-        bool sameDay = recentTransaction[i].date.day == weekDay.day;
-        bool sameMonth = recentTransaction[i].date.month == weekDay.month;
-        bool sameYear = recentTransaction[i].date.year == weekDay.year;
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-        if (sameDay && sameMonth && sameYear) {
-          totalSum += recentTransaction[i].value;
-        }
-      }
+class _MyHomePageState extends State<MyHomePage> {
+  final List<Transaction> _transactions = [];
 
-      return {
-        'day': DateFormat.E().format(weekDay)[0],
-        'value': totalSum,
-      };
-    }).reversed.toList();
+  List<Transaction> get _recentTransactions {
+    return _transactions.where((tr) {
+      return tr.date.isAfter(DateTime.now().subtract(
+        const Duration(days: 7),
+      ));
+    }).toList();
   }
 
-  double get _weekTotalValue {
-    return groupedTransactions.fold(0.0, (sum, tr) {
-      return sum + (tr['value'] as double);
+  _addTransaction(String title, double value, DateTime date) {
+    final newTransaction = Transaction(
+      id: Random().nextDouble().toString(),
+      title: title,
+      value: value,
+      date: date,
+    );
+
+    setState(() {
+      _transactions.add(newTransaction);
     });
+
+    Navigator.of(context).pop();
+  }
+
+  _removeTransaction(String id) {
+    setState(() {
+      _transactions.removeWhere((tr) => tr.id == id);
+    });
+  }
+
+  _openTransactionFormModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return TransactionForm(_addTransaction);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 6,
-      margin: const EdgeInsets.all(20),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: groupedTransactions.map((tr) {
-            return Flexible(
-              fit: FlexFit.tight,
-              child: ChartBar(
-                label: tr['day'] as String,
-                value: tr['value'] as double,
-                percentage: _weekTotalValue == 0
-                    ? 0
-                    : (tr['value'] as double) / _weekTotalValue,
-              ),
-            );
-          }).toList(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Despesas Pessoais'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => _openTransactionFormModal(context),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Chart(_recentTransactions),
+            TransactionList(_transactions, _removeTransaction),
+          ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () => _openTransactionFormModal(context),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
